@@ -12,7 +12,7 @@
  * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package ortus.boxlang.moduleslug.util;
+package ortus.boxlang.markdown.util;
 
 import ortus.boxlang.runtime.scopes.Key;
 
@@ -21,6 +21,10 @@ import ortus.boxlang.runtime.scopes.Key;
  */
 public class KeyDictionary {
 
-	public static final Key moduleName = new Key( "@MODULE_SLUG@" );
+	public static final Key	markdown		= new Key( "markdown" );
+	public static final Key	markdowService	= new Key( "MarkdownService" );
+	public static final Key	moduleName		= new Key( "bxMarkdown" );
+	public static final Key	html			= new Key( "html" );
+	public static final Key	tableOptions	= new Key( "tableOptions" );
 
 }

@@ -1,22 +1,24 @@
 {
-	"name": "@MODULE_NAME@",
+	"name": "bx-markdown",
 	"version": "@build.version@+@build.number@",
-	"location": "https://downloads.ortussolutions.com/ortussolutions/boxlang-modules/@MODULE_SLUG@/@build.version@/@MODULE_SLUG@-@build.version@.zip",
+	"location": "https://downloads.ortussolutions.com/ortussolutions/boxlang-modules/bx-markdown/@build.version@/bx-markdown-@build.version@.zip",
 	"author": "Ortus Solutions",
-	"homepage": "https://github.com/ortus-boxlang/@MODULE_SLUG@",
-	"documentation": "https://github.com/ortus-boxlang/@MODULE_SLUG@",
+	"homepage": "https://github.com/ortus-boxlang/bx-markdown",
+	"documentation": "https://github.com/ortus-boxlang/bx-markdown",
 	"repository": {
 		"type": "git",
-		"URL": "https://github.com/ortus-boxlang/@MODULE_SLUG@"
+		"URL": "https://github.com/ortus-boxlang/bx-markdown"
 	},
 	"bugs": "https://ortussolutions.atlassian.net/browse/BLMODULES",
-	"slug": "@MODULE_SLUG@",
-	"shortDescription": "Module template for BoxLang modules",
+	"slug": "bx-markdown",
+	"shortDescription": "Native Markdown support for BoxLang applications",
 	"type": "boxlang-modules",
-	"keywords": ["boxlang"],
+	"keywords": [
+		"boxlang"
+	],
 	"boxlang": {
 		"minimumVersion": "1.0.0",
-		"moduleName": "@MODULE_REGISTERED_NAME@"
+		"moduleName": "bxMarkdown"
 	},
 	"private": false,
 	"license": [
@@ -40,8 +42,5 @@
 		"/src/**",
 		"gradle/**"
 	],
-	"scripts": {
-		"setupTemplate": "task run taskFile=src/build/SetupTemplate.cfc",
-		"onRelease": "publish"
-	}
+	"scripts": {}
 }

@@ -36,7 +36,7 @@ class {
 	 * The BoxLang mapping for your module.  All BoxLang modules are registered with an internal
 	 * mapping prefix of : bxModules.{this.mapping}, /bxmodules/{this.mapping}. Ex: bxModules.test, /bxmodules/test
 	 */
-	this.mapping = "bxSpreadsheet";
+	this.mapping = "bxMarkdown";
 
 	/**
 	 * Who built the module
@@ -46,7 +46,7 @@ class {
 	/**
 	 * The module description
 	 */
-	this.description = "This module does amazing things";
+	this.description = "Native markdown support for BoxLang";
 
 	/**
 	 * The module web URL
@@ -77,8 +77,43 @@ class {
 		 * Every module has a settings configuration object
 		 */
 		settings = {
-			loadedOn : now(),
-			loadedBy : "Luis Majano"
+			// Looks for www or emails and converts them to links
+			autoLinkUrls                  : true,
+			// Creates anchor links for headings
+			anchorLinks                   : true,
+			// Set the anchor id
+			anchorSetId                   : true,
+			// Set the anchor id but also the name
+			achorSetName                  : true,
+			// Do we create the anchor for the full header or just before it. True is wrap, false is just create anchor tag
+			anchorWrapText                : false,
+			// The class(es) to apply to the anchor
+			anchorClass                   : "anchor",
+			// raw html prefix. Added before heading text, wrapped or unwrapped
+			anchorPrefix                  : "",
+			// raw html suffix. Added before heading text, wrapped or unwrapped
+			anchorSuffix                  : "",
+			// Enable youtube embedded link transformer
+			enableYouTubeTransformer      : false,
+			// default null, custom inline code open HTML
+			codeStyleHTMLOpen             : "<code>",
+			// default null, custom inline code close HTML
+			codeStyleHTMLClose            : "</code>",
+			// default "language-", prefix used for generating the <code> class for a fenced code block, only used if info is not empty and language is not defined in
+			fencedCodeLanguageClassPrefix : "language-",
+			// Table options
+			tableOptions                  : {
+				// Treat consecutive pipes at the end of a column as defining spanning column.
+				columnSpans                 : true,
+				// Whether table body columns should be at least the number or header columns.
+				appendMissingColumns        : true,
+				// Whether to discard body columns that are beyond what is defined in the header
+				discardExtraColumns         : true,
+				// Class name to use on tables
+				className                   : "table",
+				// When true only tables whose header lines contain the same number of columns as the separator line will be recognized
+				headerSeparationColumnMatch : true
+			}
 		};
 
 		/**
@@ -106,17 +141,12 @@ class {
 		 * The module interceptors to register into the runtime
 		 */
 		interceptors = [
-			// { class="path.to.Interceptor", properties={} }
-			{ class : "#moduleRecord.invocationPath#.interceptors.Listener", properties : {
-				createdOn : now(),
-				by : "Luis Majano"
-			} }
 		];
 
 		/**
 		 * A list of custom interception points to register into the runtime
 		 */
-		customInterceptionPoints = [ "onBxTestModule" ];
+		customInterceptionPoints = [ ];
 	}
 
 	/**
@@ -141,7 +171,4 @@ class {
 	 * that match the approved runtime interception points
 	 */
 
-	 function afterModuleActivations(){
-		// do something
-	 }
 }

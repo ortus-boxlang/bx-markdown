@@ -1,4 +1,4 @@
-# ⚡︎ BoxLang Module: @MODULE_NAME@
+# ⚡︎ BoxLang Markdown
 
 ```
 |:------------------------------------------------------:|
@@ -16,112 +16,168 @@
 
 <p>&nbsp;</p>
 
-This template can be used to create Ortus based BoxLang Modules. To use, just click the `Use this Template` button in the github repository: https://github.com/ortus-boxlang/boxlang-module-template and run the setup task from where you cloned it.
+Welcome to the BoxLang Markdown module.  This provides native support for Markdown in BoxLang based on the popular Flexmark library.
 
-```bash
-box task run taskFile=src/build/SetupTemplate
+## Built In Functions (BIFs)
+
+The following BIFs are available for use in your BoxLang code:
+
+* `markdown()`
+* `HtmlToMarkdown()`
+
+### `markdown()`
+
+Converts markdown markup to HTML.
+
+```js
+markdown( txt )
 ```
 
-The `SetupTemplate` task will ask you for your module name, id and description and configure the template for you! Enjoy!
+**Arguments:**
 
-## Directory Structure
+* `txt` - The markdown text to convert to HTML
 
-Here is a brief overview of the directory structure:
+**Returns:**
 
--   `.github/workflows` - These are the github actions to test and build the module via CI
--   `build` - This is a temporary non-sourced folder that contains the build assets for the module that gradle produces
--   `gradle` - The gradle wrapper and configuration
--   `src` - Where your module source code lives
--   `.cfformat.json` - A CFFormat using the Ortus Standards
--   `.editorconfig` - Smooth consistency between editors
--   `.gitattributes` - Git attributes
--   `.gitignore` - Basic ignores. Modify as needed.
--   `.markdownlint.json` - A linting file for markdown docs
--   `.ortus-java-style.xml` - Ortus Java Style for IntelliJ, VScode, Eclipse.
--   `box.json` - The box.json for your module used to publish to ForgeBox
--   `build.gradle` - The gradle build file for the module
--   `changelog.md` - A nice changelog tracking file
--   `CONTRIBUTING.md` - A contribution guideline
--   `gradlew` - The gradle wrapper
--   `gradlew.bat` - The gradle wrapper for windows
--   `ModuleConfig.cfc` - Your module's configuration. Modify as needed.
--   `readme.md` - Your module's readme. Modify as needed.
--   `settings.gradle` - The gradle settings file
+ The HTML equivalent string of the markup.
 
-Here is a brief overview of the source directory structure:
+**Example:**
 
--   `build` - Build scripts and assets
--   `main` - The main module source code
-    -   `bx` - The BoxLang source code
-    -   `ModuleConfig.bx` - The BoxLang module configuration
-        -   `bifs` - BoxLang built-in functions
-        -   `components` - BoxLang components
-        -   `config` - BoxLang configuration, schedulers, etc.
-        -   `interceptors` - BoxLang interceptors
-        -   `libs` - Java libraries to use that are NOT managed by gradle
-        -   `models` - BoxLang models
-    -   `java` - Java source code
-    -   `resources` - Resources for the module placed in final jar
--   `test`
-    -   `bx` - The BoxLang test code
-    -   `java` - Java test code
-    -   `resources` - Resources for testing
-        -   `libs` - BoxLang binary goes here for now.
-
-## Project Properties
-
-The project name is defined in the `settings.gradle` file. You can change it there.
-The project version, BoxLang Version and JDK version is defined in the `build.gradle` file. You can change it there.
-
-## Gradle Tasks
-
-Before you get started, you need to run the `downloadBoxLang` task in order to download the latest BoxLang binary until we publish to Maven.
-
-```bash
-gradle downloadBoxLang
+```js
+markdown( "# Hello World" )
 ```
 
-This will store the binary under `/src/test/resources/libs` for you to use in your tests and compiler. Here are some basic tasks
+**Output:**
 
-| Task                | Description                                                                                                       |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `build`             | The default lifecycle task that triggers the build process, including tasks like `clean`, `assemble`, and others. |
-| `clean`             | Deletes the `build` folders. It helps ensure a clean build by removing any previously generated artifacts.        |
-| `compileJava`       | Compiles Java source code files located in the `src/main/java` directory                                          |
-| `compileTestJava`   | Compiles Java test source code files located in the `src/test/java` directory                                     |
-| `dependencyUpdates` | Checks for updated versions of all dependencies                                                                   |
-| `downloadBoxLang`   | Downloads the latest BoxLang binary for testing                                                                   |
-| `jar`               | Packages your project's compiled classes and resources into a JAR file `build/libs` folder                        |
-| `javadoc`           | Generates the Javadocs for your project and places them in the `build/docs/javadoc` folder                        |
-| `serviceLoader`     | Generates the ServiceLoader file for your project                                                                 |
-| `spotlessApply`     | Runs the Spotless plugin to format the code                                                                       |
-| `spotlessCheck`     | Runs the Spotless plugin to check the formatting of the code                                                      |
-| `tasks`             | Show all the available tasks in the project                                                                       |
-| `test`              | Executes the unit tests in your project and produces the reports in the `build/reports/tests` folder              |
+```html
+<h1>Hello World</h1>
+```
 
-## Tests
+### `HtmlToMarkdown()`
 
-Please use the `src/test` folder for your unit tests. You can either test using TestBox o JUnit if it's Java.
+Converts HTML markup to markdown.
 
-## VSCode Tests
+```js
+HtmlToMarkdown( markup )
+```
 
-If you will be running tests for modules using the VSCode test explorer, then you need to make sure you remove the `/src/main/resources` line item from the configured class path, if not, the BoxLang core will try loading any service loaders it finds in that class path resolution.
+**Arguments:**
 
-> Please note, this IS ONLY FOR MODULE DEVELOPMENT.
+* `markup` - The HTML string to convert.
 
-Go to the `Java Projects` panel, click on the 3 dots and click on `Configure Classpath`. Remove the `/src/main/resources` line item and hit `APPLY SETTINGS` on the bottom left.
+**Returns:**
 
-## Github Actions Automation
+* The markdown equivalent string of the markup.
 
-The github actions will clone, test, package, deploy your module to ForgeBox and the Ortus S3 accounts for API Docs and Artifacts. So please make sure the following environment variables are set in your repository.
+**Example:**
 
-> Please note that most of them are already defined at the org level
+```js
+HtmlToMarkdown( "<h1>Hello World</h1>" )
+```
 
--   `FORGEBOX_TOKEN` - The Ortus ForgeBox API Token
--   `AWS_ACCESS_KEY` - The travis user S3 account
--   `AWS_ACCESS_SECRET` - The travis secret S3
+**Output:**
 
-> Please contact the admins in the `#infrastructure` channel for these credentials if needed
+```markdown
+# Hello World
+```
+
+## Components
+
+This module also provides a `bx:markdown` component that can be used to convert markdown to HTML in a wrapping approach.  You can use it in script or in the templating language.  The following attributes are available:
+
+* `variable` - The variable to store the output in.  If not set, the output will be written to the response.
+
+Example with variable:
+
+```js
+// The content of the component will be parsed and stored in the variable: data.
+bx:markdown variable="data"{
+	writeOutput( "## Hola" )
+}
+```
+
+Example with no variable, outputs to the response:
+
+```js
+bx:markdown{
+	writeOutput( "## Hola" )
+}
+```
+
+Example in the templating language using a variable:
+
+```html
+<bx:markdown variable="html">
+	## Hola Mundo
+
+	My beautiful markdown text
+</bx:markdown>
+<bx:output>#html#</bx:output>
+```
+
+Example in the templating language with no variable:
+
+```html
+<bx:markdown>
+	## Hola mundo
+
+	This is a markdown test
+</bx:markdown>
+```
+
+## Settings
+
+A subset of the flexmark options are supported.  These can be configured in your `boxlang.json` in the `modules` section:
+
+```js
+"modules" : {
+
+	"cbmarkdown" : {
+		"enabled" : true,
+		"settings" : {
+			// Looks for www or emails and converts them to links
+			"autoLinkUrls"                  : true,
+			// Creates anchor links for headings
+			"anchorLinks"                   : true,
+			// Set the anchor id
+			"anchorSetId"                   : true,
+			// Set the anchor id but also the name
+			"achorSetName"                  : true,
+			// Do we create the anchor for the full header or just before it. True is wrap, false is just create anchor tag
+			"anchorWrapText"                : false,
+			// The class(es) to apply to the anchor
+			"anchorClass"                   : "anchor",
+			// raw html prefix. Added before heading text, wrapped or unwrapped
+			"anchorPrefix"                  : "",
+			// raw html suffix. Added before heading text, wrapped or unwrapped
+			"anchorSuffix"                  : "",
+			// Enable youtube embedded link transformer
+			"enableYouTubeTransformer"      : false,
+			// default null, custom inline code open HTML
+			"codeStyleHTMLOpen"             : "<code>",
+			// default null, custom inline code close HTML
+			"codeStyleHTMLClose"            : "</code>",
+			// default "language-", prefix used for generating the <code> class for a fenced code block, only used if info is not empty and language is not defined in
+			"fencedCodeLanguageClassPrefix" : "language-",
+			// Table options
+			"tableOptions"                  : {
+				// Treat consecutive pipes at the end of a column as defining spanning column.
+				"columnSpans"                 : true,
+				// Whether table body columns should be at least the number or header columns.
+				"appendMissingColumns"        : true,
+				// Whether to discard body columns that are beyond what is defined in the header
+				"discardExtraColumns"         : true,
+				// Class name to use on tables
+				"className"                   : "table",
+				// When true only tables whose header lines contain the same number of columns as the separator line will be recognized
+				"headerSeparationColumnMatch" : true
+			}
+		}
+	}
+	// end markdown config
+
+};
+```
 
 ## Ortus Sponsors
 

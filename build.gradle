@@ -45,6 +45,9 @@ dependencies {
 		testImplementation files( 'src/test/resources/libs/boxlang-' + boxlangVersion + '.jar' )
 	}
 
+	// https://mvnrepository.com/artifact/com.vladsch.flexmark/flexmark-all
+	implementation( "com.vladsch.flexmark:flexmark-all:0.64.8" )
+
 	// Test Frameworks
 	testImplementation "org.junit.jupiter:junit-jupiter:5.+"
 	testImplementation "org.mockito:mockito-core:5.+"
