@@ -24,7 +24,7 @@ on:
 env:
   MODULE_ID: ${{ github.event.repository.name }}
   JDK: 21
-  GRADLE: 8.7
+  GRADLE_VERSION: 8.11
   BUILD_ID: ${{ github.run_number }}
   SNAPSHOT: ${{ inputs.snapshot || false }}
 
@@ -56,9 +56,9 @@ jobs:
           java-version: ${{ env.JDK }}
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: ${{ env.GRADLE }}
+          gradle-version: "${{ env.GRADLE_VERSION }}"
 
       - name: Setup Environment Variables For Build Process
         id: current_version
@@ -194,9 +194,9 @@ jobs:
           ref: development
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: ${{ env.GRADLE }}
+          gradle-version: "${{ env.GRADLE_VERSION }}"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
