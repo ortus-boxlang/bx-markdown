@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Admonition/callout blocks (`!!! type "Title"`, collapsible `???`/`???+`) via a new `enableAdmonition` setting (Flexmark's own admonition extension)
 - Footnote references (`[^1]`) via a new `enableFootnotes` setting
 - Definition lists via a new `enableDefinitionLists` setting
-- A genuine plugin/extension mechanism: `MarkdownService.registerExtension()`/`unregisterExtension()`, and `registerMarkdownExtension()`/`unregisterMarkdownExtension()` BIFs, for registering any Flexmark extension - not just the ones this module wires up as settings - without forking this module
+- A genuine plugin/extension mechanism: `MarkdownService.registerExtension()`/`unregisterExtension()`, and `markdownRegister()`/`markdownUnregister()` BIFs, for registering any Flexmark extension - not just the ones this module wires up as settings - without forking this module
 
 ## [1.0.0] - 2025-04-21
 

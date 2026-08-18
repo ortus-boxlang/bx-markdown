@@ -32,12 +32,16 @@ import ortus.boxlang.runtime.types.exceptions.BoxRuntimeException;
 import ortus.boxlang.runtime.validation.Validator;
 
 /**
- * Removes a Flexmark extension previously registered via
- * {@code registerMarkdownExtension()} - a no-op if it was never registered
- * (or already removed).
+ * The plugin entry point for this module: registers a Flexmark
+ * {@code com.vladsch.flexmark.util.misc.Extension} instance - one of
+ * Flexmark's own bundled extensions this module's built-in settings don't
+ * already cover, or a fully custom one of your own - so it's loaded on
+ * every subsequent {@code markdown()}/{@code HtmlToMarkdown()}/{@code bx:markdown}
+ * call, no fork of this module required. Registering the same instance
+ * twice is a no-op.
  */
 @BoxBIF
-public class UnregisterMarkdownExtension extends BIF {
+public class MarkdownRegister extends BIF {
 
 	/**
 	 * Markdown service
@@ -47,7 +51,7 @@ public class UnregisterMarkdownExtension extends BIF {
 	/**
 	 * Constructor
 	 */
-	public UnregisterMarkdownExtension() {
+	public MarkdownRegister() {
 		super();
 		this.declaredArguments = new Argument[] {
 		    new Argument( true, Argument.ANY, KeyDictionary.extension, Set.of( Validator.REQUIRED ) )
@@ -55,12 +59,13 @@ public class UnregisterMarkdownExtension extends BIF {
 	}
 
 	/**
-	 * Unregisters a previously-registered Flexmark extension.
+	 * Registers a Flexmark extension for use on every markdown conversion going forward.
 	 *
 	 * @param context   The context in which the BIF is being invoked.
 	 * @param arguments Argument scope for the BIF.
 	 *
-	 * @argument.extension The same `com.vladsch.flexmark.util.misc.Extension` instance passed to `registerMarkdownExtension()`.
+	 * @argument.extension A {@code com.vladsch.flexmark.util.misc.Extension} instance, e.g. from
+	 *                     `createObject( "java", "com.vladsch.flexmark.ext.emoji.EmojiExtension" ).create()`.
 	 *
 	 * @return null
 	 */
@@ -68,11 +73,11 @@ public class UnregisterMarkdownExtension extends BIF {
 		Object candidate = arguments.get( KeyDictionary.extension );
 		if ( ! ( candidate instanceof Extension ) ) {
 			throw new BoxRuntimeException(
-			    "unregisterMarkdownExtension() requires a com.vladsch.flexmark.util.misc.Extension instance, received: "
+			    "markdownRegister() requires a com.vladsch.flexmark.util.misc.Extension instance, received: "
 			        + ( candidate == null ? "null" : candidate.getClass().getName() )
 			);
 		}
-		this.markdownService.unregisterExtension( ( Extension ) candidate );
+		this.markdownService.registerExtension( ( Extension ) candidate );
 		return null;
 	}
 

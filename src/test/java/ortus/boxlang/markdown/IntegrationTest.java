@@ -155,7 +155,7 @@ public class IntegrationTest extends BaseIntegrationTest {
 	}
 
 	/**
-	 * registerMarkdownExtension()/unregisterMarkdownExtension() (via
+	 * markdownRegister()/markdownUnregister() (via
 	 * MarkdownService.registerExtension()) are exercised here as plain Java,
 	 * constructing a standalone MarkdownService instance directly, rather than
 	 * through runtime.executeSource() + createObject("java", ...). The module
@@ -177,7 +177,7 @@ public class IntegrationTest extends BaseIntegrationTest {
 	 */
 	@DisplayName( "Test MarkdownService.registerExtension()/unregisterExtension() wire up a Flexmark extension with no built-in setting" )
 	@Test
-	public void testRegisterMarkdownExtension() {
+	public void testMarkdownServiceRegisterExtension() {
 		MarkdownService	service		= new MarkdownService();
 		String			markdown	= "I :heart: BoxLang";
 

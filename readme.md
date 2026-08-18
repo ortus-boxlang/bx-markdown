@@ -24,8 +24,8 @@ The following BIFs are available for use in your BoxLang code:
 
 * `markdown()`
 * `HtmlToMarkdown()`
-* `registerMarkdownExtension()`
-* `unregisterMarkdownExtension()`
+* `markdownRegister()`
+* `markdownUnregister()`
 
 ### `markdown()`
 
@@ -83,12 +83,12 @@ HtmlToMarkdown( "<h1>Hello World</h1>" )
 # Hello World
 ```
 
-### `registerMarkdownExtension()`
+### `markdownRegister()`
 
 Registers a [Flexmark](https://github.com/vsch/flexmark-java) `com.vladsch.flexmark.util.misc.Extension` instance so it's loaded on every subsequent `markdown()`/`HtmlToMarkdown()`/`bx:markdown` call - the plugin entry point described in [Plugin Extensions](#plugin-extensions) below. Registering the same instance twice is a no-op.
 
 ```js
-registerMarkdownExtension( extension )
+markdownRegister( extension )
 ```
 
 **Arguments:**
@@ -99,17 +99,17 @@ registerMarkdownExtension( extension )
 
 * Nothing (`null`).
 
-### `unregisterMarkdownExtension()`
+### `markdownUnregister()`
 
 Removes a previously-registered extension. A no-op if it was never registered (or already removed).
 
 ```js
-unregisterMarkdownExtension( extension )
+markdownUnregister( extension )
 ```
 
 **Arguments:**
 
-* `extension` - The same extension instance passed to `registerMarkdownExtension()`.
+* `extension` - The same extension instance passed to `markdownRegister()`.
 
 **Returns:**
 
@@ -261,12 +261,12 @@ Beyond the settings above, `MarkdownService` exposes a genuine extension point f
 markdownService.registerExtension( SomeFlexmarkExtension.create() )
 
 // Or from BoxLang script, if the extension class is on your own classpath
-registerMarkdownExtension( createObject( "java", "com.vladsch.flexmark.ext.footnotes.FootnoteExtension" ).create() )
+markdownRegister( createObject( "java", "com.vladsch.flexmark.ext.footnotes.FootnoteExtension" ).create() )
 ```
 
-`unregisterMarkdownExtension()` (or `MarkdownService.unregisterExtension()`) removes one again.
+`markdownUnregister()` (or `MarkdownService.unregisterExtension()`) removes one again.
 
-**A classloader caveat:** this module bundles Flexmark (`flexmark-all`) as its own dependency. Whether a *different* BoxLang module (or a top-level script) can construct a Flexmark extension object that this module's own `instanceof Extension` check accepts depends on whether your deployment's classloader topology gives the two of you a shared view of those Flexmark classes - straightforward for code that's part of this module itself (or shares its classloader), less certain across an isolated module boundary. If `registerMarkdownExtension()` throws complaining the object it received "requires a com.vladsch.flexmark.util.misc.Extension instance", that's this boundary - construct/register the extension from code that shares this module's own classpath instead of a separate one.
+**A classloader caveat:** this module bundles Flexmark (`flexmark-all`) as its own dependency. Whether a *different* BoxLang module (or a top-level script) can construct a Flexmark extension object that this module's own `instanceof Extension` check accepts depends on whether your deployment's classloader topology gives the two of you a shared view of those Flexmark classes - straightforward for code that's part of this module itself (or shares its classloader), less certain across an isolated module boundary. If `markdownRegister()` throws complaining the object it received "requires a com.vladsch.flexmark.util.misc.Extension instance", that's this boundary - construct/register the extension from code that shares this module's own classpath instead of a separate one.
 
 ## Ortus Sponsors
 
