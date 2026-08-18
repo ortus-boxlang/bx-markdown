@@ -24,6 +24,8 @@ The following BIFs are available for use in your BoxLang code:
 
 * `markdown()`
 * `HtmlToMarkdown()`
+* `registerMarkdownExtension()`
+* `unregisterMarkdownExtension()`
 
 ### `markdown()`
 
@@ -81,6 +83,38 @@ HtmlToMarkdown( "<h1>Hello World</h1>" )
 # Hello World
 ```
 
+### `registerMarkdownExtension()`
+
+Registers a [Flexmark](https://github.com/vsch/flexmark-java) `com.vladsch.flexmark.util.misc.Extension` instance so it's loaded on every subsequent `markdown()`/`HtmlToMarkdown()`/`bx:markdown` call - the plugin entry point described in [Plugin Extensions](#plugin-extensions) below. Registering the same instance twice is a no-op.
+
+```js
+registerMarkdownExtension( extension )
+```
+
+**Arguments:**
+
+* `extension` - A `com.vladsch.flexmark.util.misc.Extension` instance.
+
+**Returns:**
+
+* Nothing (`null`).
+
+### `unregisterMarkdownExtension()`
+
+Removes a previously-registered extension. A no-op if it was never registered (or already removed).
+
+```js
+unregisterMarkdownExtension( extension )
+```
+
+**Arguments:**
+
+* `extension` - The same extension instance passed to `registerMarkdownExtension()`.
+
+**Returns:**
+
+* Nothing (`null`).
+
 ## Components
 
 This module also provides a `bx:markdown` component that can be used to convert markdown to HTML in a wrapping approach.  You can use it in script or in the templating language.  The following attributes are available:
@@ -132,7 +166,7 @@ A subset of the flexmark options are supported.  These can be configured in your
 ```js
 "modules" : {
 
-	"cbmarkdown" : {
+	"bxMarkdown" : {
 		"enabled" : true,
 		"settings" : {
 			// Looks for www or emails and converts them to links
@@ -159,6 +193,12 @@ A subset of the flexmark options are supported.  These can be configured in your
 			"codeStyleHTMLClose"            : "</code>",
 			// default "language-", prefix used for generating the <code> class for a fenced code block, only used if info is not empty and language is not defined in
 			"fencedCodeLanguageClassPrefix" : "language-",
+			// Enable admonition/callout blocks: !!! type "Title" (or ??? / ???+ for a collapsible version)
+			"enableAdmonition"              : false,
+			// Enable footnote references: [^1] ... [^1]: definition
+			"enableFootnotes"               : false,
+			// Enable definition lists: Term \n : Definition
+			"enableDefinitionLists"         : false,
 			// Table options
 			"tableOptions"                  : {
 				// Treat consecutive pipes at the end of a column as defining spanning column.
@@ -178,6 +218,55 @@ A subset of the flexmark options are supported.  These can be configured in your
 
 };
 ```
+
+### Admonitions
+
+Enable with `enableAdmonition: true`. Renders [Flexmark's admonition extension](https://github.com/vsch/flexmark-java/wiki/Admonition-Extension) - `!!!` for a regular callout, `???`/`???+` for a collapsible one (marked with an `adm-collapsed` CSS class; the extension doesn't ship its own JS toggle, so wire up a click handler for it if you want it interactive):
+
+```markdown
+!!! note "Optional Title"
+    Body text - regular markdown, including **bold**, `code`, links, etc.
+
+??? tip
+    Collapsed by default.
+```
+
+Renders as `<div class="adm-block adm-note">`/`<div class="adm-block adm-tip adm-collapsed">` with an `adm-heading`/`adm-body` structure and an inline SVG icon - style it yourself, or call the extension's own `AdmonitionExtension.getDefaultCSS()`/`getDefaultScript()` (Java) for its bundled defaults.
+
+### Footnotes
+
+Enable with `enableFootnotes: true`:
+
+```markdown
+Here's a claim[^1].
+
+[^1]: The source for that claim.
+```
+
+### Definition Lists
+
+Enable with `enableDefinitionLists: true`:
+
+```markdown
+Term
+:   Definition text.
+```
+
+## Plugin Extensions
+
+Beyond the settings above, `MarkdownService` exposes a genuine extension point for anything Flexmark itself supports that isn't already wired up as a setting - register any `com.vladsch.flexmark.util.misc.Extension` instance (one of [Flexmark's own bundled extensions](https://github.com/vsch/flexmark-java/wiki/Extensions), or a fully custom one of your own) and it's loaded on every subsequent conversion, no fork of this module required:
+
+```js
+// Java-side, e.g. from another module's own code
+markdownService.registerExtension( SomeFlexmarkExtension.create() )
+
+// Or from BoxLang script, if the extension class is on your own classpath
+registerMarkdownExtension( createObject( "java", "com.vladsch.flexmark.ext.footnotes.FootnoteExtension" ).create() )
+```
+
+`unregisterMarkdownExtension()` (or `MarkdownService.unregisterExtension()`) removes one again.
+
+**A classloader caveat:** this module bundles Flexmark (`flexmark-all`) as its own dependency. Whether a *different* BoxLang module (or a top-level script) can construct a Flexmark extension object that this module's own `instanceof Extension` check accepts depends on whether your deployment's classloader topology gives the two of you a shared view of those Flexmark classes - straightforward for code that's part of this module itself (or shares its classloader), less certain across an isolated module boundary. If `registerMarkdownExtension()` throws complaining the object it received "requires a com.vladsch.flexmark.util.misc.Extension instance", that's this boundary - construct/register the extension from code that shares this module's own classpath instead of a separate one.
 
 ## Ortus Sponsors
 
