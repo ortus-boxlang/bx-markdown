@@ -41,7 +41,7 @@ import ortus.boxlang.runtime.validation.Validator;
  * twice is a no-op.
  */
 @BoxBIF
-public class MarkdownRegister extends BIF {
+public class MarkdownRegisterExtension extends BIF {
 
 	/**
 	 * Markdown service
@@ -51,7 +51,7 @@ public class MarkdownRegister extends BIF {
 	/**
 	 * Constructor
 	 */
-	public MarkdownRegister() {
+	public MarkdownRegisterExtension() {
 		super();
 		this.declaredArguments = new Argument[] {
 		    new Argument( true, Argument.ANY, KeyDictionary.extension, Set.of( Validator.REQUIRED ) )
@@ -73,7 +73,7 @@ public class MarkdownRegister extends BIF {
 		Object candidate = arguments.get( KeyDictionary.extension );
 		if ( ! ( candidate instanceof Extension ) ) {
 			throw new BoxRuntimeException(
-			    "markdownRegister() requires a com.vladsch.flexmark.util.misc.Extension instance, received: "
+			    "markdownRegisterExtension() requires a com.vladsch.flexmark.util.misc.Extension instance, received: "
 			        + ( candidate == null ? "null" : candidate.getClass().getName() )
 			);
 		}

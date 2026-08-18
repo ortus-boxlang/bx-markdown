@@ -155,7 +155,7 @@ public class IntegrationTest extends BaseIntegrationTest {
 	}
 
 	/**
-	 * markdownRegister()/markdownUnregister() (via
+	 * markdownRegisterExtension()/markdownUnregisterExtension() (via
 	 * MarkdownService.registerExtension()) are exercised here as plain Java,
 	 * constructing a standalone MarkdownService instance directly, rather than
 	 * through runtime.executeSource() + createObject("java", ...). The module

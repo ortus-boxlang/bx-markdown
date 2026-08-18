@@ -33,11 +33,11 @@ import ortus.boxlang.runtime.validation.Validator;
 
 /**
  * Removes a Flexmark extension previously registered via
- * {@code markdownRegister()} - a no-op if it was never registered
+ * {@code markdownRegisterExtension()} - a no-op if it was never registered
  * (or already removed).
  */
 @BoxBIF
-public class MarkdownUnregister extends BIF {
+public class MarkdownUnregisterExtension extends BIF {
 
 	/**
 	 * Markdown service
@@ -47,7 +47,7 @@ public class MarkdownUnregister extends BIF {
 	/**
 	 * Constructor
 	 */
-	public MarkdownUnregister() {
+	public MarkdownUnregisterExtension() {
 		super();
 		this.declaredArguments = new Argument[] {
 		    new Argument( true, Argument.ANY, KeyDictionary.extension, Set.of( Validator.REQUIRED ) )
@@ -60,7 +60,7 @@ public class MarkdownUnregister extends BIF {
 	 * @param context   The context in which the BIF is being invoked.
 	 * @param arguments Argument scope for the BIF.
 	 *
-	 * @argument.extension The same `com.vladsch.flexmark.util.misc.Extension` instance passed to `markdownRegister()`.
+	 * @argument.extension The same `com.vladsch.flexmark.util.misc.Extension` instance passed to `markdownRegisterExtension()`.
 	 *
 	 * @return null
 	 */
@@ -68,7 +68,7 @@ public class MarkdownUnregister extends BIF {
 		Object candidate = arguments.get( KeyDictionary.extension );
 		if ( ! ( candidate instanceof Extension ) ) {
 			throw new BoxRuntimeException(
-			    "markdownUnregister() requires a com.vladsch.flexmark.util.misc.Extension instance, received: "
+			    "markdownUnregisterExtension() requires a com.vladsch.flexmark.util.misc.Extension instance, received: "
 			        + ( candidate == null ? "null" : candidate.getClass().getName() )
 			);
 		}
