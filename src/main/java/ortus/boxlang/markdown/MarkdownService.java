@@ -18,9 +18,14 @@
 package ortus.boxlang.markdown;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.vladsch.flexmark.ext.admonition.AdmonitionExtension;
 import com.vladsch.flexmark.ext.anchorlink.AnchorLinkExtension;
 import com.vladsch.flexmark.ext.autolink.AutolinkExtension;
+import com.vladsch.flexmark.ext.definition.DefinitionExtension;
+import com.vladsch.flexmark.ext.footnotes.FootnoteExtension;
 import com.vladsch.flexmark.ext.gfm.tasklist.TaskListExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.ext.toc.TocExtension;
@@ -56,7 +61,7 @@ public class MarkdownService extends BaseService {
 	/**
 	 * Default Options
 	 */
-	private static final IStruct	DEFAULT_OPTIONS	= Struct.of(
+	private static final IStruct	DEFAULT_OPTIONS		= Struct.of(
 	    // Whether to auto link URLs
 	    "autoLinkUrls", true,
 	    // Whether to enable anchor links
@@ -81,13 +86,19 @@ public class MarkdownService extends BaseService {
 	    "codeStyleHTMLClose", "</code>",
 	    // default "language-", prefix used for generating the <code> class for a fenced code block, only used if info is not empty and language is not
 	    // defined in
-	    "fencedCodeLanguageClassPrefix", "language-"
+	    "fencedCodeLanguageClassPrefix", "language-",
+	    // Enable admonition/callout blocks: !!! type "Title" (or ??? / ???+ for a collapsible <details> version)
+	    "enableAdmonition", false,
+	    // Enable footnote references: [^1] ... [^1]: definition
+	    "enableFootnotes", false,
+	    // Enable definition lists: Term \n : Definition
+	    "enableDefinitionLists", false
 	);
 
 	/**
 	 * The default table options for the Markdown service
 	 */
-	private static final IStruct	TABLE_OPTIONS	= Struct.of(
+	private static final IStruct	TABLE_OPTIONS		= Struct.of(
 	    // Treat consecutive pipes at the end of a column as defining spanning column.
 	    "columnSpans", true,
 	    // Whether table body columns should be at least the number or header columns.
@@ -119,6 +130,17 @@ public class MarkdownService extends BaseService {
 	 * The converter
 	 */
 	private FlexmarkHtmlConverter	converter;
+
+	/**
+	 * Extra Flexmark {@link Extension} instances registered by other modules/apps
+	 * at runtime (module spec: the markdown "plugin" mechanism) - loaded
+	 * alongside the built-in settings-driven extensions on every parse/render/convert.
+	 * A consumer with classpath visibility into the relevant Flexmark extension
+	 * jar (or its own custom {@link Extension} implementation) registers one via
+	 * {@link #registerExtension(Extension)} - typically from its own module's
+	 * `onLoad()` - to teach this service new markdown syntax without forking it.
+	 */
+	private final List<Extension>	customExtensions	= new CopyOnWriteArrayList<>();
 
 	/**
 	 * --------------------------------------------------------------------------
@@ -206,6 +228,73 @@ public class MarkdownService extends BaseService {
 
 	/**
 	 * --------------------------------------------------------------------------
+	 * Plugin/Extension Registration
+	 * --------------------------------------------------------------------------
+	 * This is the extensibility point for anything beyond the built-in
+	 * settings-driven extensions above - register any Flexmark {@link Extension}
+	 * (one of Flexmark's own bundled extensions the built-in settings don't cover,
+	 * or a fully custom one of your own) and it's loaded into the parser/renderer/
+	 * converter alongside everything else, no fork required.
+	 */
+
+	/**
+	 * Registers an extra Flexmark {@link Extension} to be loaded on every
+	 * subsequent parse/render/convert - idempotent, registering the same
+	 * instance twice has no additional effect. Invalidates the cached
+	 * parser/renderer/converter so the new extension takes effect on the very
+	 * next call, rather than requiring a restart.
+	 *
+	 * @param extension The Flexmark extension instance to register
+	 */
+	public void registerExtension( Extension extension ) {
+		if ( !this.customExtensions.contains( extension ) ) {
+			this.customExtensions.add( extension );
+			resetBuilders();
+		}
+	}
+
+	/**
+	 * Unregisters a previously-registered extension - a no-op if it was never
+	 * registered (or already removed). Invalidates the cached
+	 * parser/renderer/converter so the change takes effect immediately.
+	 *
+	 * @param extension The Flexmark extension instance to remove
+	 */
+	public void unregisterExtension( Extension extension ) {
+		if ( this.customExtensions.remove( extension ) ) {
+			resetBuilders();
+		}
+	}
+
+	/**
+	 * The extra extensions currently registered via {@link #registerExtension(Extension)},
+	 * in registration order. A defensive copy - mutating the returned list has
+	 * no effect on this service.
+	 *
+	 * @return An immutable snapshot of the registered extensions
+	 */
+	public List<Extension> getRegisteredExtensions() {
+		return List.copyOf( this.customExtensions );
+	}
+
+	/**
+	 * Drops the cached parser/renderer/converter so the next call to any of
+	 * {@link #toHtml(String)}/{@link #toMarkdown(String)} rebuilds them from
+	 * the current settings + registered extensions, rather than continuing to
+	 * use a stale build from before a change. {@link #registerExtension(Extension)}/
+	 * {@link #unregisterExtension(Extension)} already call this for you - only
+	 * call it directly if you mutated {@link #getSettings()} in place (e.g.
+	 * toggling `enableAdmonition` at runtime) and need that to take effect
+	 * immediately rather than on the next module reload.
+	 */
+	public synchronized void resetBuilders() {
+		this.parser			= null;
+		this.htmlRenderer	= null;
+		this.converter		= null;
+	}
+
+	/**
+	 * --------------------------------------------------------------------------
 	 * Private Helpers
 	 * --------------------------------------------------------------------------
 	 */
@@ -282,6 +371,27 @@ public class MarkdownService extends BaseService {
 		if ( enableYouTubeTransformer ) {
 			extensionsToLoad.add( YouTubeLinkExtension.create() );
 		}
+
+		// Admonition/callout blocks: enableAdmonition
+		boolean enableAdmonition = BooleanCaster.cast( this.settings.get( "enableAdmonition" ) );
+		if ( enableAdmonition ) {
+			extensionsToLoad.add( AdmonitionExtension.create() );
+		}
+
+		// Footnotes: enableFootnotes
+		boolean enableFootnotes = BooleanCaster.cast( this.settings.get( "enableFootnotes" ) );
+		if ( enableFootnotes ) {
+			extensionsToLoad.add( FootnoteExtension.create() );
+		}
+
+		// Definition lists: enableDefinitionLists
+		boolean enableDefinitionLists = BooleanCaster.cast( this.settings.get( "enableDefinitionLists" ) );
+		if ( enableDefinitionLists ) {
+			extensionsToLoad.add( DefinitionExtension.create() );
+		}
+
+		// Plugin extensions registered at runtime via registerExtension()
+		extensionsToLoad.addAll( this.customExtensions );
 
 		// Table Options
 		IStruct tableOptions = ( IStruct ) this.settings.getOrDefault( KeyDictionary.tableOptions, TABLE_OPTIONS );
