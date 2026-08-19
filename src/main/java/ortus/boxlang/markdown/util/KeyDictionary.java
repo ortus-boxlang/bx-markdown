@@ -26,5 +26,6 @@ public class KeyDictionary {
 	public static final Key	moduleName		= new Key( "bxMarkdown" );
 	public static final Key	html			= new Key( "html" );
 	public static final Key	tableOptions	= new Key( "tableOptions" );
+	public static final Key	extension		= new Key( "extension" );
 
 }
