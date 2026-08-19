@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-08-19
+
 ### Added
 
 - Admonition/callout blocks (`!!! type "Title"`, collapsible `???`/`???+`) via a new `enableAdmonition` setting (Flexmark's own admonition extension)
@@ -20,6 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - First iteration of this module
 
-[Unreleased]: https://github.com/ortus-boxlang/bx-markdown/compare/v1.0.0...HEAD
-
+[unreleased]: https://github.com/ortus-boxlang/bx-markdown/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/ortus-boxlang/bx-markdown/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/ortus-boxlang/bx-markdown/compare/37ff1997381dfc0cda9f3ae0172053704da901f2...v1.0.0
