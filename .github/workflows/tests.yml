@@ -9,7 +9,6 @@ on:
 
 env:
   MODULE_ID: ${{ github.event.repository.name }}
-  GRADLE_VERSION: 8.11
 
 jobs:
   tests:
@@ -38,7 +37,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: "${{ env.GRADLE_VERSION }}"
+          gradle-version: wrapper
 
       - name: Test Module
         run: |
